@@ -1,7 +1,7 @@
 # Week 5 – Database Schema and API Specification
 
 ## 1. Introduction
-This section presents the **Week 5 deliverable** for the **Sydney NDIS Provider Mobile App (GridLink NDIS)**. The focus of this work is to design the **database schema**, define the **REST APIs**, specify the **validation rules**, and answer the core design questions required for backend implementation.
+ The focus of this work is to design the **database schema**, define the **REST APIs**, specify the **validation rules**, and answer the core design questions required for backend implementation.
 
 This deliverable provides the technical foundation for how the system stores data, manages relationships between records, exposes services to the frontend, and maintains data integrity and security.
 
