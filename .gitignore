@@ -1,0 +1,6 @@
+# Ignore macOS hidden files
+.DS_Store
+
+# We are committing config/database.php for this prototype, 
+# but usually it should be ignored and a sample provided.
+# config/database.php
