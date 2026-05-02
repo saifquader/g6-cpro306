@@ -45,6 +45,9 @@ if (session_status() == PHP_SESSION_NONE) {
                         <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'compliance.php' ? 'active' : '' ?>" href="compliance.php">Compliance</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : '' ?>" href="messages.php">Messages</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : '' ?>" href="users.php">Staff</a>
                     </li>
                 </ul>

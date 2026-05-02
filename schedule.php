@@ -36,7 +36,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         redirect('schedule.php');
     } catch(PDOException $e) {}
 }
+
+// Prepare JSON events for FullCalendar
+$calendarEvents = [];
+foreach ($shifts as $s) {
+    $color = '#ffc107'; // Scheduled (yellow)
+    if ($s['status'] == 'Completed') $color = '#198754'; // Green
+    if ($s['status'] == 'Cancelled') $color = '#dc3545'; // Red
+
+    $calendarEvents[] = [
+        'id' => $s['shift_id'],
+        'title' => $s['p_first'] . ' ' . $s['p_last'] . ' (Worker: ' . $s['u_first'] . ')',
+        'start' => $s['shift_start'],
+        'end' => $s['shift_end'],
+        'backgroundColor' => $color,
+        'borderColor' => $color,
+        'extendedProps' => [
+            'location' => $s['location'],
+            'status' => $s['status']
+        ]
+    ];
+}
 ?>
+
+<!-- FullCalendar CSS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold mb-0">Service Scheduling</h2>
@@ -45,41 +69,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     </button>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Participant</th>
-                        <th>Assigned Worker</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($shifts)): ?>
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No shifts scheduled.</td>
-                    </tr>
-                    <?php else: ?>
-                        <?php foreach($shifts as $s): ?>
-                        <tr>
-                            <td class="fw-bold"><?= htmlspecialchars($s['p_first'] . ' ' . $s['p_last']) ?></td>
-                            <td><?= htmlspecialchars($s['u_first'] . ' ' . $s['u_last']) ?></td>
-                            <td><?= date('M d, Y h:i A', strtotime($s['shift_start'])) ?></td>
-                            <td><?= date('M d, Y h:i A', strtotime($s['shift_end'])) ?></td>
-                            <td><?= htmlspecialchars($s['location']) ?></td>
-                            <td>
-                                <span class="badge rounded-pill badge-status-<?= strtolower($s['status']) ?>"><?= htmlspecialchars($s['status']) ?></span>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+<ul class="nav nav-pills mb-3" id="scheduleTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="calendar-tab" data-bs-toggle="pill" data-bs-target="#calendar-view" type="button" role="tab">Visual Calendar</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="list-tab" data-bs-toggle="pill" data-bs-target="#list-view" type="button" role="tab">List View</button>
+  </li>
+</ul>
+
+<div class="tab-content" id="scheduleTabsContent">
+    <!-- Calendar View Tab -->
+    <div class="tab-pane fade show active" id="calendar-view" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- List View Tab -->
+    <div class="tab-pane fade" id="list-view" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Participant</th>
+                                <th>Assigned Worker</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($shifts)): ?>
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No shifts scheduled.</td>
+                            </tr>
+                            <?php else: ?>
+                                <?php foreach($shifts as $s): ?>
+                                <tr>
+                                    <td class="fw-bold"><?= htmlspecialchars($s['p_first'] . ' ' . $s['p_last']) ?></td>
+                                    <td><?= htmlspecialchars($s['u_first'] . ' ' . $s['u_last']) ?></td>
+                                    <td><?= date('M d, Y h:i A', strtotime($s['shift_start'])) ?></td>
+                                    <td><?= date('M d, Y h:i A', strtotime($s['shift_end'])) ?></td>
+                                    <td><?= htmlspecialchars($s['location']) ?></td>
+                                    <td>
+                                        <span class="badge rounded-pill badge-status-<?= strtolower($s['status']) ?>"><?= htmlspecialchars($s['status']) ?></span>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -136,5 +183,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var events = <?= json_encode($calendarEvents) ?>;
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events,
+        eventClick: function(info) {
+            alert('Shift: ' + info.event.title + '\nLocation: ' + info.event.extendedProps.location + '\nStatus: ' + info.event.extendedProps.status);
+        }
+    });
+
+    calendar.render();
+
+    // Re-render calendar when switching tabs to avoid size issues
+    var calendarTab = document.getElementById('calendar-tab')
+    calendarTab.addEventListener('shown.bs.tab', function (event) {
+        calendar.render();
+    })
+});
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

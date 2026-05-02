@@ -85,6 +85,18 @@ CREATE TABLE IF NOT EXISTS incident_reports (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE IF NOT EXISTS messages (
+    message_id VARCHAR(36) PRIMARY KEY,
+    sender_id VARCHAR(36),
+    participant_id VARCHAR(36),
+    subject VARCHAR(255),
+    body TEXT NOT NULL,
+    sent_at DATETIME NOT NULL,
+    status VARCHAR(50) DEFAULT 'Sent',
+    FOREIGN KEY (sender_id) REFERENCES users(user_id),
+    FOREIGN KEY (participant_id) REFERENCES participants(participant_id)
+);
+
 -- Insert initial data
 INSERT IGNORE INTO organisations (organisation_id, name, abn, email, phone, address) 
 VALUES ('org-1', 'GridLink Care Sydney', '12345678901', 'info@gridlinkcare.com.au', '02 1234 5678', '123 George St, Sydney NSW 2000');
