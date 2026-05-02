@@ -44,6 +44,9 @@ if (session_status() == PHP_SESSION_NONE) {
                     <li class="nav-item">
                         <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'compliance.php' ? 'active' : '' ?>" href="compliance.php">Compliance</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : '' ?>" href="users.php">Staff</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">

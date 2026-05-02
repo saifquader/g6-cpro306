@@ -96,4 +96,4 @@ VALUES
 
 -- Password is 'password123'
 INSERT IGNORE INTO users (user_id, organisation_id, role_id, first_name, last_name, email, password_hash, phone, status)
-VALUES ('user-1', 'org-1', 'role-admin', 'Admin', 'User', 'admin@gridlink.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0400000000', 'Active');
+VALUES ('user-1', 'org-1', 'role-admin', 'Admin', 'User', 'admin@gridlink.com', '$2y$10$WVUqdtDH/6o7UEhx5giYF.SFAqwKUSbb0qT.0qd.4eXJdQB/MLeq.', '0400000000', 'Active');

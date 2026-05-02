@@ -97,6 +97,7 @@ try {
                 <h5 class="mb-0">Quick Actions</h5>
             </div>
             <div class="card-body d-flex flex-column gap-2">
+                <a href="users.php" class="btn btn-light border text-start"><i class="fa-solid fa-user-plus text-info me-2"></i> Add Staff / Admin</a>
                 <a href="participants.php" class="btn btn-light border text-start"><i class="fa-solid fa-plus text-primary me-2"></i> Add Participant</a>
                 <a href="schedule.php" class="btn btn-light border text-start"><i class="fa-solid fa-clock text-success me-2"></i> Schedule Shift</a>
                 <a href="compliance.php" class="btn btn-light border text-start"><i class="fa-solid fa-file-signature text-warning me-2"></i> Write Progress Note</a>
