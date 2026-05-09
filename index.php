@@ -72,8 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                     <input type="password" class="form-control" id="password" name="password" required placeholder="password123">
                 </div>
+                <div class="text-end mt-1">
+                    <a href="forgot_password.php" class="text-decoration-none small text-primary">Forgot Password?</a>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 mt-3">Sign In</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 mt-2">Sign In</button>
         </form>
     </div>
 </div>

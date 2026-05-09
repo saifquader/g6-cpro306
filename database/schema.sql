@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     phone VARCHAR(20),
+    reset_token VARCHAR(64) DEFAULT NULL,
+    reset_expires DATETIME DEFAULT NULL,
     status VARCHAR(50) DEFAULT 'Active',
     FOREIGN KEY (organisation_id) REFERENCES organisations(organisation_id),
     FOREIGN KEY (role_id) REFERENCES roles(role_id)

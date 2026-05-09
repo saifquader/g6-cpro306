@@ -10,18 +10,39 @@ $errorMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'add_user') {
     try {
-        $hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $stmt = $pdo->prepare("INSERT INTO users (user_id, organisation_id, role_id, first_name, last_name, email, password_hash, phone, status) VALUES (?, 'org-1', ?, ?, ?, ?, ?, ?, 'Active')");
+        $dummyHash = password_hash(bin2hex(random_bytes(10)), PASSWORD_BCRYPT);
+        $token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+7 days'));
+        $userId = generate_uuid();
+        
+        $stmt = $pdo->prepare("INSERT INTO users (user_id, organisation_id, role_id, first_name, last_name, email, password_hash, phone, reset_token, reset_expires, status) VALUES (?, 'org-1', ?, ?, ?, ?, ?, ?, ?, ?, 'Active')");
         $stmt->execute([
-            generate_uuid(),
+            $userId,
             $_POST['role_id'],
             $_POST['first_name'],
             $_POST['last_name'],
             $_POST['email'],
-            $hash,
-            $_POST['phone']
+            $dummyHash,
+            $_POST['phone'],
+            $token,
+            $expires
         ]);
-        $successMessage = "User added successfully!";
+        
+        // Send Welcome Email
+        require_once 'includes/mailer.php';
+        $setupLink = "http://" . $_SERVER['HTTP_HOST'] . "/ndis/reset_password.php?token=" . $token;
+        
+        $subject = "Welcome to GridLink NDIS Support";
+        $body = "
+            <h3>Hello " . htmlspecialchars($_POST['first_name']) . ",</h3>
+            <p>An administrator has created an account for you on the GridLink platform.</p>
+            <p>Please click the link below to set up your password and log in. This link will expire in 7 days.</p>
+            <p><a href='$setupLink' style='background:#4361ee;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;'>Set Up Password</a></p>
+        ";
+        
+        send_email($_POST['email'], $subject, $body);
+        
+        $successMessage = "User added successfully! A welcome email has been sent.";
     } catch(PDOException $e) {
         $errorMessage = "Error adding user. Email might already exist.";
     }
@@ -134,10 +155,6 @@ try {
                 <div class="col-12">
                     <label class="form-label">Phone</label>
                     <input type="text" class="form-control" name="phone">
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password" required>
                 </div>
                 <div class="col-12">
                     <label class="form-label">Role</label>
