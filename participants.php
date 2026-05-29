@@ -121,7 +121,7 @@ try {
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" name="dob" required>
+                    <input type="date" class="form-control" name="dob" required min="1900-01-01" max="<?= date('Y-m-d') ?>">
                 </div>
                 <div class="col-12">
                     <label class="form-label">Address</label>

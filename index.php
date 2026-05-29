@@ -162,6 +162,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- tsParticles core & preset for interactive background -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-engine@2.12.0/tsparticles.engine.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles-preset-links@2.12.0/tsparticles.preset.links.min.js"></script>
 <script src="assets/js/main.js"></script>
+
+<!-- Initialize Particles on Login Page -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById("interactive-sidebar")) {
+        loadLinksPreset(tsParticles);
+        tsParticles.load("interactive-sidebar", {
+            preset: "links",
+            background: {
+                color: "#0f172a",
+            },
+            particles: {
+                color: { value: "#4361ee" },
+                links: { color: "#4cc9f0", distance: 150, enable: true, opacity: 0.5, width: 1 },
+                move: { enable: true, speed: 2 },
+                number: { density: { enable: true, area: 800 }, value: 80 },
+                opacity: { value: 0.5 },
+                size: { value: { min: 1, max: 3 } }
+            },
+            interactivity: {
+                events: {
+                    onHover: { enable: true, mode: "repulse" },
+                    onClick: { enable: true, mode: "push" }
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { quantity: 4 }
+                }
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>
