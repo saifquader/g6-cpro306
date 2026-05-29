@@ -34,6 +34,14 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    token_hash VARCHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS participants (
     participant_id VARCHAR(36) PRIMARY KEY,
     organisation_id VARCHAR(36),

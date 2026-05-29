@@ -23,6 +23,35 @@ try {
     die("Database Connection failed: " . $e->getMessage());
 }
 
+// Auto-login logic (Remember Me)
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    $tokenHash = hash('sha256', $token);
+    
+    try {
+        // Find token
+        $stmt = $pdo->prepare("
+            SELECT u.user_id, u.first_name, u.last_name, u.role_id, t.expires_at 
+            FROM user_tokens t
+            JOIN users u ON t.user_id = u.user_id
+            WHERE t.token_hash = ? AND u.status = 'Active'
+        ");
+        $stmt->execute([$tokenHash]);
+        $user = $stmt->fetch();
+        
+        if ($user && strtotime($user['expires_at']) > time()) {
+            // Valid token, log them in
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
+            $_SESSION['role_id'] = $user['role_id'];
+        } else {
+            // Invalid or expired token
+            setcookie('remember_token', '', time() - 3600, '/');
+        }
+    } catch (PDOException $e) {}
+}
+
 // Helper function to generate UUIDs
 function generate_uuid() {
     return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
