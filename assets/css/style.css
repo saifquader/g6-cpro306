@@ -92,10 +92,47 @@ body {
 .auth-sidebar {
     display: none;
     flex: 1;
-    background-image: url('../img/login_bg.png');
-    background-size: cover;
-    background-position: center;
     position: relative;
+    background: #0f172a;
+    overflow: hidden;
+}
+
+/* Interactive Animated Background */
+.animated-bg {
+    position: absolute;
+    top: -50px; left: -50px; right: -50px; bottom: -50px;
+    z-index: 0;
+    transition: transform 0.1s ease-out; /* For JS parallax */
+}
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 15s infinite alternate ease-in-out;
+}
+.orb-1 {
+    width: 45vw; height: 45vw;
+    background: var(--primary-color);
+    top: -10%; left: -10%;
+}
+.orb-2 {
+    width: 35vw; height: 35vw;
+    background: var(--accent-color);
+    bottom: -10%; right: -10%;
+    animation-delay: -5s;
+}
+.orb-3 {
+    width: 40vw; height: 40vw;
+    background: var(--secondary-color);
+    top: 40%; left: 40%;
+    animation-delay: -10s;
+}
+@keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(40px, 40px) scale(1.05); }
 }
 
 /* Overlay for the branding side */
@@ -103,12 +140,14 @@ body {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+    background: rgba(15, 23, 42, 0.4);
+    z-index: 1;
+    backdrop-filter: blur(1px);
 }
 
 .auth-sidebar-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;

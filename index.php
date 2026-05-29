@@ -68,7 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="auth-split-wrapper">
     <!-- Branding Side (Hidden on Mobile) -->
-    <div class="auth-sidebar">
+    <div class="auth-sidebar" id="interactive-sidebar">
+        <div class="animated-bg" id="animated-bg">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
         <div class="auth-sidebar-content">
             <h1 class="display-4 fw-bold mb-3"><i class="fa-solid fa-hands-holding-child me-3"></i>GridLink</h1>
             <h3 class="fw-light mb-4">Empowering NDIS Providers in Sydney.</h3>
@@ -103,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST" action="index.php" class="auth-form needs-validation" novalidate>
                 <!-- Email Input -->
                 <div class="form-floating mb-3 position-relative">
-                    <input type="email" class="form-control ps-5" id="email" name="email" required placeholder="name@example.com" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                    <input type="email" class="form-control ps-5" id="email" name="email" required placeholder="Enter your email" autocomplete="off" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                     <label for="email" class="ps-5">Email address</label>
                     <i class="fa-solid fa-envelope input-icon"></i>
                     <div class="invalid-feedback">Please enter a valid email address.</div>
@@ -111,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Password Input -->
                 <div class="form-floating mb-3 position-relative">
-                    <input type="password" class="form-control ps-5 pe-5" id="password" name="password" required placeholder="Password">
+                    <input type="password" class="form-control ps-5 pe-5" id="password" name="password" required placeholder="Enter your password" autocomplete="off">
                     <label for="password" class="ps-5">Password</label>
                     <i class="fa-solid fa-lock input-icon"></i>
                     <i class="fa-solid fa-eye password-toggle toggle-password" data-target="password" title="Show/Hide Password"></i>

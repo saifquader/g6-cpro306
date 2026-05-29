@@ -69,4 +69,34 @@ document.addEventListener('DOMContentLoaded', function() {
             form.classList.add('was-validated');
         });
     });
+
+    // Interactive Parallax Background Logic
+    const sidebar = document.getElementById('interactive-sidebar');
+    const animatedBg = document.getElementById('animated-bg');
+    
+    if (sidebar && animatedBg) {
+        sidebar.addEventListener('mousemove', function(e) {
+            // Calculate mouse position relative to the center of the sidebar
+            const rect = sidebar.getBoundingClientRect();
+            const x = e.clientX - rect.left - (rect.width / 2);
+            const y = e.clientY - rect.top - (rect.height / 2);
+            
+            // Move the background slightly in the opposite direction of the mouse
+            const moveX = (x / rect.width) * -30;
+            const moveY = (y / rect.height) * -30;
+            
+            animatedBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+        
+        sidebar.addEventListener('mouseleave', function() {
+            // Reset position when mouse leaves
+            animatedBg.style.transform = `translate(0px, 0px)`;
+            animatedBg.style.transition = `transform 0.5s ease-out`;
+        });
+        
+        sidebar.addEventListener('mouseenter', function() {
+            // Remove transition for smooth tracking while inside
+            animatedBg.style.transition = `transform 0.1s ease-out`;
+        });
+    }
 });
