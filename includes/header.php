@@ -24,32 +24,48 @@ if (session_status() == PHP_SESSION_NONE) {
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="dashboard.php">
-                <i class="fa-solid fa-hands-holding-child me-2"></i>GridLink
-            </a>
+            <?php if(($_SESSION['role_id'] ?? '') === 'role-participant'): ?>
+                <a class="navbar-brand fw-bold" href="participant_dashboard.php">
+                    <i class="fa-solid fa-hands-holding-child me-2"></i>GridLink Portal
+                </a>
+            <?php else: ?>
+                <a class="navbar-brand fw-bold" href="dashboard.php">
+                    <i class="fa-solid fa-hands-holding-child me-2"></i>GridLink
+                </a>
+            <?php endif; ?>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'participants.php' ? 'active' : '' ?>" href="participants.php">Participants</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'schedule.php' ? 'active' : '' ?>" href="schedule.php">Schedule</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'compliance.php' ? 'active' : '' ?>" href="compliance.php">Compliance</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : '' ?>" href="messages.php">Messages</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : '' ?>" href="users.php">Staff</a>
-                    </li>
+                    <?php if(($_SESSION['role_id'] ?? '') === 'role-participant'): ?>
+                        <!-- Participant-only nav -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'participant_dashboard.php' ? 'active' : '' ?>" href="participant_dashboard.php">
+                                <i class="fa-solid fa-house me-1"></i> My Dashboard
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <!-- Staff / Admin nav -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'participants.php' ? 'active' : '' ?>" href="participants.php">Participants</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'schedule.php' ? 'active' : '' ?>" href="schedule.php">Schedule</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'compliance.php' ? 'active' : '' ?>" href="compliance.php">Compliance</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : '' ?>" href="messages.php">Messages</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : '' ?>" href="users.php">Staff</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
@@ -57,7 +73,7 @@ if (session_status() == PHP_SESSION_NONE) {
                             <i class="fa-solid fa-user-circle me-1"></i> <?= htmlspecialchars($_SESSION['first_name'] ?? 'User') ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                            <li><a class="dropdown-item" href="logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
                         </ul>
                     </li>
                 </ul>

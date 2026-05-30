@@ -26,8 +26,8 @@ try {
         SELECT s.*, p.first_name, p.last_name 
         FROM shifts s 
         JOIN participants p ON s.participant_id = p.participant_id 
-        WHERE DATE(s.start_time) = ? 
-        ORDER BY s.start_time ASC
+        WHERE DATE(s.shift_start) = ? 
+        ORDER BY s.shift_start ASC
     ");
     $stmt4->execute([$today]);
     $todaysShifts = $stmt4->fetchAll();
@@ -113,8 +113,8 @@ try {
                 <?php else: ?>
                     <div class="list-group list-group-flush mt-2">
                         <?php foreach($todaysShifts as $shift): 
-                            $start = date('g:i A', strtotime($shift['start_time']));
-                            $end = date('g:i A', strtotime($shift['end_time']));
+                            $start = date('g:i A', strtotime($shift['shift_start']));
+                            $end = date('g:i A', strtotime($shift['shift_end']));
                         ?>
                             <div class="list-group-item px-0 py-3 border-0 border-bottom">
                                 <div class="d-flex align-items-center">
