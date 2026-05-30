@@ -76,4 +76,12 @@ function check_auth() {
         redirect('index.php');
     }
 }
+
+// Role Boundary Check (Blocks Participants)
+function check_admin() {
+    check_auth(); // Ensure logged in first
+    if (isset($_SESSION['role_id']) && $_SESSION['role_id'] === 'role-participant') {
+        redirect('participant_dashboard.php');
+    }
+}
 ?>

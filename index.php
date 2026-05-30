@@ -41,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', false, true); // HttpOnly
                 }
 
-                redirect('dashboard.php');
+                if ($user['role_id'] === 'role-participant') {
+                    redirect('participant_dashboard.php');
+                } else {
+                    redirect('dashboard.php');
+                }
             } else {
                 $error = 'Invalid email or password. Please try again.';
             }
@@ -125,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <button type="submit" class="btn btn-premium mb-4">Sign In</button>
 
             <!-- Social Logins (Google Material styling) -->
-            <div class="row g-2">
+            <div class="row g-2 mb-4">
                 <div class="col-6">
                     <button type="button" class="btn btn-social-minimal w-100" onclick="alert('Google Auth Integration Pending API Keys')">
                         <i class="fa-brands fa-google text-danger me-2"></i> Google
@@ -136,6 +140,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <i class="fa-brands fa-github me-2"></i> GitHub
                     </button>
                 </div>
+            </div>
+            
+            <div class="text-center mt-2 border-top pt-3">
+                <span class="text-muted small">New Participant? </span>
+                <a href="register.php" class="text-decoration-none small fw-semibold text-primary">Register for Portal</a>
             </div>
         </form>
     </div>

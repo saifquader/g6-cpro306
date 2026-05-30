@@ -1,7 +1,7 @@
 <?php
 // schedule.php
 require_once 'config/database.php';
-check_auth();
+check_admin();
 require_once 'includes/header.php';
 
 // Fetch Participants and Users for dropdowns

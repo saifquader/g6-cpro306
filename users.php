@@ -1,7 +1,7 @@
 <?php
 // users.php
 require_once 'config/database.php';
-check_auth();
+check_admin();
 require_once 'includes/header.php';
 
 // Only admins should ideally manage users, though we'll keep it simple

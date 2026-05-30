@@ -1,7 +1,7 @@
 <?php
 // messages.php
 require_once 'config/database.php';
-check_auth();
+check_admin();
 require_once 'includes/header.php';
 
 $successMessage = '';
