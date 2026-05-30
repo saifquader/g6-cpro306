@@ -45,6 +45,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     }
 }
 
+// Handle Send Message
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'message') {
+    try {
+        $msgStmt = $pdo->prepare("INSERT INTO messages (message_id, sender_id, participant_id, subject, body, sent_at, status) VALUES (?, ?, ?, ?, ?, NOW(), 'Sent')");
+        $msgStmt->execute([
+            generate_uuid(),
+            $_SESSION['user_id'],
+            $_POST['participant_id'],
+            $_POST['subject'],
+            $_POST['body']
+        ]);
+        $successMessage = "Message sent successfully!";
+    } catch(PDOException $e) {
+        $errorMessage = "Failed to send message.";
+    }
+}
+
 // Fetch participants
 $participants = [];
 try {
@@ -64,6 +81,12 @@ try {
 <?php if($successMessage): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <?= $successMessage ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+<?php if(isset($errorMessage) && $errorMessage): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <?= $errorMessage ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
@@ -103,8 +126,9 @@ try {
                             <td><?= htmlspecialchars($p['date_of_birth']) ?></td>
                             <td><?= htmlspecialchars($p['emergency_contact']) ?></td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></button>
+                                <button class="btn btn-sm btn-outline-secondary" title="View"><i class="fa-solid fa-eye"></i></button>
                                 <button class="btn btn-sm btn-outline-primary edit-btn" 
+                                    title="Edit"
                                     data-bs-toggle="modal" 
                                     data-bs-target="#editParticipantModal"
                                     data-id="<?= htmlspecialchars($p['participant_id']) ?>"
@@ -116,6 +140,14 @@ try {
                                     data-emergency="<?= htmlspecialchars($p['emergency_contact']) ?>"
                                     data-needs="<?= htmlspecialchars($p['support_needs']) ?>">
                                     <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success msg-btn"
+                                    title="Send Message"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#sendMessageModal"
+                                    data-pid="<?= htmlspecialchars($p['participant_id']) ?>"
+                                    data-pname="<?= htmlspecialchars($p['first_name'] . ' ' . $p['last_name']) ?>">
+                                    <i class="fa-solid fa-envelope"></i>
                                 </button>
                             </td>
                         </tr>
@@ -232,6 +264,7 @@ try {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Edit button - populate modal
     const editBtns = document.querySelectorAll('.edit-btn');
     editBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -245,7 +278,51 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_needs').value = this.getAttribute('data-needs');
         });
     });
+
+    // Message button - populate modal
+    const msgBtns = document.querySelectorAll('.msg-btn');
+    msgBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('msg_participant_id').value = this.getAttribute('data-pid');
+            document.getElementById('msg_recipient_name').textContent = this.getAttribute('data-pname');
+        });
+    });
 });
 </script>
+
+<!-- Send Message Modal -->
+<div class="modal fade" id="sendMessageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="participants.php">
+          <input type="hidden" name="action" value="message">
+          <input type="hidden" name="participant_id" id="msg_participant_id">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">
+                <i class="fa-solid fa-envelope me-2 text-success"></i>
+                Send Message to <span id="msg_recipient_name" class="text-success"></span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Subject</label>
+                <input type="text" class="form-control" name="subject" required placeholder="e.g. Upcoming shift reminder">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Message</label>
+                <textarea class="form-control" name="body" rows="5" required placeholder="Type your message here..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+            </button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <?php require_once 'includes/footer.php'; ?>

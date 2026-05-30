@@ -77,90 +77,164 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
 <ul class="nav nav-tabs mb-4" id="complianceTabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">Progress Notes</button>
+    <button class="nav-link active" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">
+        <i class="fa-solid fa-file-lines me-1"></i> Progress Notes
+        <span class="badge bg-primary ms-1"><?= count($notes) ?></span>
+    </button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link text-danger" id="incidents-tab" data-bs-toggle="tab" data-bs-target="#incidents" type="button" role="tab">Incident Reports</button>
+    <button class="nav-link text-danger" id="incidents-tab" data-bs-toggle="tab" data-bs-target="#incidents" type="button" role="tab">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i> Incident Reports
+        <span class="badge bg-danger ms-1"><?= count($incidents) ?></span>
+    </button>
   </li>
 </ul>
 
 <div class="tab-content" id="complianceTabsContent">
   <!-- Progress Notes Tab -->
   <div class="tab-pane fade show active" id="notes" role="tabpanel">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0" style="border-radius: 15px;">
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Participant</th>
-                            <th>Worker</th>
-                            <th>Wellbeing</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($notes)): ?>
-                        <tr><td colspan="5" class="text-center py-4 text-muted">No progress notes found.</td></tr>
-                        <?php else: ?>
-                            <?php foreach($notes as $n): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($n['created_date']) ?></td>
-                                <td class="fw-bold"><?= htmlspecialchars($n['p_first'] . ' ' . $n['p_last']) ?></td>
-                                <td><?= htmlspecialchars($n['u_first'] . ' ' . $n['u_last']) ?></td>
-                                <td><?= htmlspecialchars($n['wellbeing_status']) ?></td>
-                                <td><?= htmlspecialchars(substr($n['note_text'], 0, 50)) ?>...</td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+            <?php if (empty($notes)): ?>
+                <div class="text-center text-muted py-5">
+                    <i class="fa-solid fa-file-lines fa-3x mb-3 opacity-25"></i>
+                    <p>No progress notes found. Add one above.</p>
+                </div>
+            <?php else: ?>
+            <div class="accordion accordion-flush" id="notesAccordion">
+                <?php foreach($notes as $idx => $n): ?>
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed py-3" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#note-<?= $idx ?>"
+                            aria-expanded="false"
+                            aria-controls="note-<?= $idx ?>">
+                            <div class="d-flex align-items-center w-100 me-3">
+                                <div class="me-3">
+                                    <?php
+                                        $wb = $n['wellbeing_status'];
+                                        $wbColor = 'secondary';
+                                        if($wb == 'Excellent') $wbColor = 'success';
+                                        elseif($wb == 'Good') $wbColor = 'info';
+                                        elseif($wb == 'Fair') $wbColor = 'warning';
+                                        elseif($wb == 'Poor') $wbColor = 'danger';
+                                    ?>
+                                    <span class="badge bg-<?= $wbColor ?>"><?= htmlspecialchars($wb) ?></span>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <strong><?= htmlspecialchars($n['p_first'] . ' ' . $n['p_last']) ?></strong>
+                                    <span class="text-muted small ms-2">— <?= htmlspecialchars(substr($n['note_text'], 0, 60)) ?>...</span>
+                                </div>
+                                <div class="text-muted small text-end ms-auto me-2" style="white-space: nowrap;">
+                                    <?= date('j M Y', strtotime($n['created_date'])) ?>
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="note-<?= $idx ?>" class="accordion-collapse collapse">
+                        <div class="accordion-body bg-light">
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Participant</small>
+                                    <span class="fw-bold"><?= htmlspecialchars($n['p_first'] . ' ' . $n['p_last']) ?></span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Recorded By</small>
+                                    <span><?= htmlspecialchars($n['u_first'] . ' ' . $n['u_last']) ?></span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Date</small>
+                                    <span><?= date('l, j F Y', strtotime($n['created_date'])) ?></span>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block mb-1">Full Note</small>
+                                    <p class="mb-0"><?= nl2br(htmlspecialchars($n['note_text'])) ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
+            <?php endif; ?>
         </div>
     </div>
   </div>
 
   <!-- Incident Reports Tab -->
   <div class="tab-pane fade" id="incidents" role="tabpanel">
-    <div class="card shadow-sm border-danger">
+    <div class="card shadow-sm border-0" style="border-radius: 15px;">
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Participant</th>
-                            <th>Type</th>
-                            <th>Severity</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($incidents)): ?>
-                        <tr><td colspan="5" class="text-center py-4 text-muted">No incident reports found.</td></tr>
-                        <?php else: ?>
-                            <?php foreach($incidents as $i): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($i['incident_date']) ?></td>
-                                <td class="fw-bold"><?= htmlspecialchars($i['p_first'] . ' ' . $i['p_last']) ?></td>
-                                <td><?= htmlspecialchars($i['incident_type']) ?></td>
-                                <td>
+            <?php if (empty($incidents)): ?>
+                <div class="text-center text-muted py-5">
+                    <i class="fa-solid fa-triangle-exclamation fa-3x mb-3 opacity-25"></i>
+                    <p>No incident reports found.</p>
+                </div>
+            <?php else: ?>
+            <div class="accordion accordion-flush" id="incidentsAccordion">
+                <?php foreach($incidents as $idx => $i): ?>
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed py-3" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#incident-<?= $idx ?>"
+                            aria-expanded="false"
+                            aria-controls="incident-<?= $idx ?>">
+                            <div class="d-flex align-items-center w-100 me-3">
+                                <div class="me-3">
                                     <?php
                                         $sevBadge = 'secondary';
-                                        if($i['severity'] == 'High') $sevBadge = 'danger';
-                                        if($i['severity'] == 'Medium') $sevBadge = 'warning text-dark';
-                                        if($i['severity'] == 'Low') $sevBadge = 'info text-dark';
+                                        if($i['severity'] == 'High' || $i['severity'] == 'Critical') $sevBadge = 'danger';
+                                        elseif($i['severity'] == 'Medium') $sevBadge = 'warning text-dark';
+                                        elseif($i['severity'] == 'Low') $sevBadge = 'info text-dark';
                                     ?>
                                     <span class="badge bg-<?= $sevBadge ?>"><?= htmlspecialchars($i['severity']) ?></span>
-                                </td>
-                                <td><?= htmlspecialchars($i['status']) ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <strong><?= htmlspecialchars($i['p_first'] . ' ' . $i['p_last']) ?></strong>
+                                    <span class="text-muted small ms-2">— <?= htmlspecialchars($i['incident_type']) ?></span>
+                                </div>
+                                <div class="text-muted small text-end ms-auto me-2" style="white-space: nowrap;">
+                                    <?= date('j M Y', strtotime($i['incident_date'])) ?>
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="incident-<?= $idx ?>" class="accordion-collapse collapse">
+                        <div class="accordion-body bg-light">
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Participant</small>
+                                    <span class="fw-bold"><?= htmlspecialchars($i['p_first'] . ' ' . $i['p_last']) ?></span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Reported By</small>
+                                    <span><?= htmlspecialchars($i['u_first'] . ' ' . $i['u_last']) ?></span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Incident Date</small>
+                                    <span><?= date('l, j F Y', strtotime($i['incident_date'])) ?></span>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Type</small>
+                                    <span><?= htmlspecialchars($i['incident_type']) ?></span>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block">Status</small>
+                                    <span class="badge bg-warning text-dark"><?= htmlspecialchars($i['status']) ?></span>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <small class="text-muted text-uppercase fw-semibold d-block mb-1">Full Description</small>
+                                    <p class="mb-0"><?= nl2br(htmlspecialchars($i['description'])) ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
+            <?php endif; ?>
         </div>
     </div>
   </div>
@@ -232,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Date of Incident</label>
-                    <input type="date" class="form-control" name="incident_date" required>
+                    <input type="date" class="form-control" name="incident_date" required max="<?= date('Y-m-d') ?>">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Severity</label>
